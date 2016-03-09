@@ -1,0 +1,13 @@
+%***************************************************************************
+% Introduction of pluginarch.tex
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+\chapter{Introduction}
+\noindent Currently, there is more than ten audio \textit{plugin standards}, basically one per major host manuacturer such as Steinberg or Digidesign but Microsoft and Apple have also developped multimedia APIs\footnote{Application Programmers Interface.} integrated to their OS\footnote{Operating System.} that include audio plugins. These standards share a lot of features and behaviours while remaining incompatible. Many converters have been released these last years for breaking those incompatibilities, but they have some unwanted drawbacks: they increase the CPU charge and they are often limited to an OS. In addition, porting plugins from an OS to another does take time especially when dealing with graphics or filesystem access. Many people have tried for their own use to develop tools to abstract from the plateforms and the standards when developping plugins, thus reducing the cost of developpement and easing developers' life. Unfortunately few of these tentatives have been released publically.\\
+
+\noindent The purpose of this document, beyond plugin formats, is to identify what is the specificity of audio plugins, what is common to all standards and what may differentiate them.\\
+
+\noindent We do not pretend to write a tutorial for writing cross-plateform/cross-standards plugins nor to be exhautive but rather give an overview of what one may encounter when trying to target different plateforms and standards, and look for a common model that can be extracted.
+
+%----------------------------------EOF-------------------------------------%

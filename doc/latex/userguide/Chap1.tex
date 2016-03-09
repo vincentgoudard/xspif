@@ -1,0 +1,45 @@
+%***************************************************************************
+% XSPIF user's guide -  userguide.tex
+% Chapter : Introduction
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+\chapter{Introduction}
+
+\noindent From the XSPIF point of view, a plugin is Digital Signal
+Processing module aimed to be integrated inside a host application
+within a network, a graph or a chain of other modules. Its ``interface''
+is fully defined by its audio input and output ports (also called
+pins), its controllable parameters and its control output(s) -- when
+control data is derived from the audio stream --.\\
+\noindent Therefore, plugins generated with XSPIF are mainly meant for
+doing effects, analysis or ``continuous synthesis'' -- i.e. as the notion
+of events is not modelized yet, MIDI synthetizers are not handled --.\\
+\noindent Furthermore, XSPIF relies on the availability of a generic
+Graphical User Interface generated automatically by the host
+application as a remote for the plugin.\\
+
+\noindent So what should you use XSPIF for?\\
+XSPIF lets you develop plugins for multiple standards from the same
+code.\\ 
+XSPIF can generate plugin templates from the definition of its
+``interface''. \\
+XSPIF is a fast way to prototype and test new algorithms.\\
+XSPIF can help you starting a new project by generating the skeleton
+of your plugin and then let you cutomize it to your needs.\\
+
+\noindent In this manual, you should find all the information or the
+pointers you would need to quickly start doing plugins with
+XSPIF. There is brief description of the ``technologies'' involved in
+XSPIF -- i.e. XML and PYTHON -- and the links to the necessary downloads,
+followed by a tutorial showing you how to write your first XSPIF
+plugin, generate the sources and compile them.\\
+
+\noindent There are 6 supported standards -- VST, AudioUnits,
+LADSPA and Max/MSP, PureData and jMax -- but others are planned to be
+added. If you want collaborate to XSPIF by adding a format or a new
+feature, please refer to the ``XSPIF: developper guide''
+\cite{xspif:developerguide} and if you want to have an overview of the
+existing plugin standards and their specificities refer to ``Audio
+plugin architectures'' \cite{pluginarch}.
+

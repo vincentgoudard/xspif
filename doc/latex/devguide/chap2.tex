@@ -1,0 +1,130 @@
+%***************************************************************************
+% XSPIF developer's guide -  devguide.tex
+% Chapter : concepts
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+\chapter{Tools and languages used for development}
+
+\section{XML: the plugin specification}
+
+\noindent XML: `eXtended Markup Language' belongs to the family of
+markup languages as HTML for example. It is very useful to describe
+documents containing structured information. Structured information
+contains both content (words, pictures, etc.), and some indications on
+what role that content plays. As the major difference with other
+Markup Languages which comes with a predefined set of Tags, with XML
+you can specify you own ones dedicated to you own application \cite{Walsh}. 
+
+%..............................................
+\subsection{Document Type Definition : xspif.dtd}\label{chap2_dtd}
+\noindent The Document Type Definition (DTD) is a file describing the way a specific XML file should be written. More precisely it defines what the possible or required elements are, where they are, how many of them one can find in the XML file, what are their attributes and sub-elements\ldots\\
+
+\noindent Here is a short XML symbols glossary:
+\begin{itemize}
+\item[?]  allow zero or one element
+\item[*]  allow zero or more elements
+\item[+]  allow one or more elements
+\item[] if no symbol, allow one and only one element
+\end{itemize}
+
+
+\noindent On the next page is the DTD specification : \verb|xspif.dtd|.
+\pagebreak
+
+\begin{verbatim}
+<!ELEMENT plugin (caption?,comment?,code?,pin+,param*,
+                  controlout*,state*,callback+)>
+<!ATTLIST plugin label          CDATA #REQUIRED
+                 plugId         CDATA #REQUIRED
+                 manufId        CDATA #REQUIRED
+                 maker          CDATA #IMPLIED
+                 copyright      CDATA #IMPLIED>
+		 
+<!ELEMENT caption       (#PCDATA)>
+<!ELEMENT comment       (#PCDATA)>
+<!ELEMENT code          (#PCDATA)>
+
+<!ELEMENT pin (caption?, comment?)>
+<!ATTLIST pin   label           CDATA   #REQUIRED
+                channels        CDATA   #REQUIRED
+                dir          (In|Out)   #REQUIRED>
+		
+<!ELEMENT param (caption?,code?,comment?)>
+<!ATTLIST param label           CDATA   #REQUIRED
+                min             CDATA   #REQUIRED
+                max             CDATA   #REQUIRED
+                default         CDATA   #REQUIRED
+                type      (float|int)   #REQUIRED
+                mapping     (lin|log)   #REQUIRED
+                unit            CDATA   #IMPLIED
+                noinlet (true|false)    #IMPLIED>
+		
+<!ELEMENT controlout (caption?, comment?)>
+<!ATTLIST controlout label      CDATA   #REQUIRED 
+                min             CDATA   #REQUIRED
+                max             CDATA   #REQUIRED
+                type      (float|int)   #REQUIRED
+                mapping     (lin|log)   #IMPLIED
+                unit            CDATA   #IMPLIED>
+
+<!ELEMENT state EMPTY>
+<!ATTLIST state label   CDATA           #REQUIRED
+                type    CDATA           #REQUIRED>
+		
+<!ELEMENT callback   (code?)>
+<!ATTLIST callback label (process|processEvents|
+                          instantiate|deinstantiate|
+                          activate|deactivate) #REQUIRED>
+\end{verbatim}
+
+%..............................................
+\subsection{Required vs. optionnal features}
+\noindent The Document Type Definition \verb|xspif.dtd| specifies the elements that the user can or has to use for the design of the meta-plugin. Some elements or attributes are required while some are optional, and the DTD helps specifying all this.\\
+\noindent However, the DTD alone cannot handle all the cases for which the meta-plugin design is not complete enough or valid; e.g. if a label contains blank spaces or any bad character for a C++ class name, the XML file is still valid for the DTD, while the C source file will definitely fail to compile. This kind of verification needs special checking, which is performed after the DTD validation with the \code{generalCheck} function and in the standard-specific modules as it will be explained later in this document.\\
+
+%..............................................
+\subsection{Elements and attributes}
+\noindent The choice of letting a certain feature be an element or a attribute is not very well defined in the XML world. In brief, elements either contain information, or have a structure of subelements, while attributes are characteristics or properties of the information object. There can be two sub-elements with the same name (if it is allowed by the DTD), but only one attribute. Then it is up to the developer to do what is more convenient.
+
+%-------------------------------------------------------------------------
+\section{Python: parsers and translators}
+
+\noindent Python \cite{python:site} is a powerful
+\textit{`interpreted, interactive, object-oriented programming language'}, which has the advantage of being very easy, and intuitive. Furthermore, its license is an Open Source one, and a great number of people are contributing to its development, so that a large collection of librairies is available to the developers, as well as a strong community providing support for new users.\\
+
+\noindent Last but not least when one want to design a cross-platform project, the Python implementation is portable: it runs on many brands of UNIX, on Windows, DOS, OS/2, Mac, Amiga\ldots \\
+
+%..............................................
+\subsection{XSPIF Python modules}
+
+\noindent The main Python script \verb|xspif.py|, which performs the generation of the plugin's source files uses a module called \verb|xspif|. This module contains the following sub-modules to handle its various tasks:
+\begin{description}
+\item \textbf{xspif.parsexml} A sub-module with methods to parse XML,
+  perform some verifications and manipulate DOM trees.
+\item \textbf{xspif.tools} A sub-module providing common tools relative to the writing of the sources.
+\item \textbf{xspif.\textit{standard}} One sub-module per standard : xspif.vst, xspif.ladspa\ldots etc. to write the C/C++ source code.
+\end{description}
+
+
+%..............................................
+\subsection{PyXML: XML package for Python}
+
+\noindent There are two main API for handling XML documents:
+SAX and DOM\footnote{SAX: ``Simple API for XML''; DOM: ``Document Object
+ Model''}. XSPIF uses the DOM API, which loads a whole XML tree as a
+unique data structure once in memory, while SAX loads it incrementally,
+ being thus more useful for bigger XML files containing pictures for
+example. But as meta-plugins are text only, they're not really big, and
+DOM gives us a lot more flexibility because we can access the
+different nodes randomly on-demand.\\ 
+
+\noindent As the default XML modules in the standard python
+distribution were not complete enough for our application, we used the
+additionnal PyXML package \cite{pyxml:site}. A good documentation for
+PyXML can be found in the \emph{libraries reference} \cite{python:library}, on the Python
+web site : \url{http:www.python.org}. The module
+\code{xml.parsers.xmlproc} is used to validate the meta-plugin file,
+with respect to the DTD, and the module \code{xml.dom.minidom} is used
+to parse the meta-plugin file, and convert it to a DOM data tree.\\ 
+

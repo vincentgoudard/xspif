@@ -1,0 +1,25 @@
+# Microsoft Developer Studio Generated Dependency File, included by compressor.mak
+
+"..\..\..\..\..\..\..\Mes VST PLUGS\vstsdk2\source\common\AudioEffect.cpp" : \
+	"..\..\..\..\..\..\..\mes vst plugs\vstsdk2\source\common\aeffect.h"\
+	"..\..\..\..\..\..\..\mes vst plugs\vstsdk2\source\common\aeffectx.h"\
+	"..\..\..\..\..\..\..\mes vst plugs\vstsdk2\source\common\aeffeditor.hpp"\
+	"..\..\..\..\..\..\..\Mes VST PLUGS\vstsdk2\source\common\AudioEffect.hpp"\
+	
+
+"..\..\..\..\..\..\..\Mes VST PLUGS\vstsdk2\source\common\audioeffectx.cpp" : \
+	"..\..\..\..\..\..\..\mes vst plugs\vstsdk2\source\common\aeffect.h"\
+	"..\..\..\..\..\..\..\mes vst plugs\vstsdk2\source\common\aeffectx.h"\
+	"..\..\..\..\..\..\..\mes vst plugs\vstsdk2\source\common\aeffeditor.hpp"\
+	"..\..\..\..\..\..\..\Mes VST PLUGS\vstsdk2\source\common\AudioEffect.hpp"\
+	"..\..\..\..\..\..\..\Mes VST PLUGS\vstsdk2\source\common\audioeffectx.h"\
+	
+
+..\compressor.vst.cpp : \
+	"..\..\..\..\..\..\..\mes vst plugs\vstsdk2\source\common\aeffect.h"\
+	"..\..\..\..\..\..\..\mes vst plugs\vstsdk2\source\common\aeffectx.h"\
+	"..\..\..\..\..\..\..\Mes VST PLUGS\vstsdk2\source\common\AudioEffect.hpp"\
+	"..\..\..\..\..\..\..\Mes VST PLUGS\vstsdk2\source\common\audioeffectx.h"\
+	"..\compressor.vst.hpp"\
+	"d:\mssdk\include\basetsd.h"\
+	

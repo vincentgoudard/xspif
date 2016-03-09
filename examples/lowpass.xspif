@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE plugin SYSTEM "xspif.dtd">
+
+<!--	
+	Commentaires
+	this File describe thebeahavior of a simple lowpass filter
+	intended to be translated into different plugins standards
+ -->
+ 
+<plugin  label = "LowPass" plugId="'lowp'" manufId="'ReMu'" maker="Remy Muller" copyright="GPL">
+    <caption>Lowpass</caption>
+    <comment>A simple lowpass with saturation</comment>
+    <code><![CDATA[
+#include <math.h>
+/******************************************/
+/* Put all independent code here */
+float saturate(float x)
+{
+if(x>0.f)
+    x = 2.f*x-x*x;
+else
+    x=  2.f*x + x*x;
+return x;
+}
+/******************************************/
+    ]]></code>
+
+    <pin label="input" dir="In" channels="2">
+     <caption>Input</caption>
+     <comment>Stereo</comment>
+    </pin>
+
+    <pin label="output" dir="Out" channels="2">
+     <caption>Output</caption>
+     <comment>Stereo</comment>
+    </pin>
+
+    <param label="cutoff" min="100.0" max="10000.0" default="1000.0" type="float" mapping="log" unit="Hz">
+      <caption>cutoff (Hz)</caption>
+      <code><![CDATA[
+      // cutoff and samplerate are both in Hertz
+      lambda = exp(- cutoff / XSPIF_GET_SAMPLE_RATE()); 
+      ]]></code>
+      <comment>This is the cutoff frequency of the plugin</comment>
+    </param>
+    
+    <state type="float" label="lambda"></state>
+    <state type="float" label="lp1"></state>
+    <state type="float" label="lp2"></state>
+
+
+    <callback label="instantiate">
+	<code><![CDATA[
+	// Initialize the internal states
+	lambda = lp1 = lp2 = 0.;
+   	]]></code>
+    </callback>
+
+    <callback label="deactivate">
+	<code><![CDATA[
+	// clears memories so that no sound is output
+	// when plugin is reactivated with no input
+	lp1 = lp2 = 0.;
+    	]]></code>
+    </callback>
+
+    <callback label="process">
+	<code><![CDATA[
+    int i = 0;
+    for(i=0;i < XSPIF_GET_VECTOR_SIZE();i++)
+    {
+         // in and out names are derived from the label in the pin declaration
+         lp1 = (1.f-lambda)*input1[i] + lambda*lp1;
+         lp2 = (1.f-lambda)*input2[i] + lambda*lp2;
+	 XSPIF_WRITE_SAMPLE(output1, i, saturate(lp1));
+	 XSPIF_WRITE_SAMPLE(output2, i, saturate(lp2));  
+    }
+   	]]></code>
+    </callback>
+</plugin>

@@ -1,0 +1,359 @@
+// !$*UTF8*$!
+{
+	FA1BFB43043DDA7401664092 = {
+		activeBuildStyle = FA1BFB42043DDA7401664092;
+		activeTarget = FA1BFB49043DDAA901664092;
+		addToTargets = (
+			FA1BFB49043DDAA901664092,
+		);
+		perUserDictionary = {
+			PBXPerProjectTemplateStateSaveDate = 80493284;
+			PBXWorkspaceContents = (
+				{
+					LeftSlideOut = {
+						Split0 = {
+							Split0 = {
+								NavContent0 = {
+									bookmark = FAB0015104CC393301664092;
+									history = (
+										FA3E2C7804504FA501664092,
+										FA8B5F860474FAAB01664092,
+										FA8B5FA90474FF8801664092,
+										FAA55D6504AAF6CC01664092,
+										FA82637104C87C1601664092,
+									);
+									prevStack = (
+										FA1BFC04043DE4F901664092,
+										FA35D5540442E3C901664092,
+										FA3E2C7B04504FA501664092,
+										FA3E2C7C04504FA501664092,
+										FA8B5F880474FAAB01664092,
+										FA8B5F890474FAAB01664092,
+										FA8B5FAA0474FF8801664092,
+										FAA55D6804AAF6CC01664092,
+										FA421AD604BC048901664092,
+										FA563B4E04C6E71001664092,
+									);
+								};
+								NavCount = 1;
+								NavGeometry0 = {
+									Frame = "{{0, 0}, {997, 579}}";
+									NavBarVisible = YES;
+								};
+							};
+							SplitCount = 1;
+							Tab0 = {
+								Debugger = {
+									Split0 = {
+										SplitCount = 2;
+									};
+									SplitCount = 1;
+									TabCount = 2;
+								};
+								LauncherConfigVersion = 7;
+							};
+							Tab1 = {
+								LauncherConfigVersion = 3;
+								Runner = {
+								};
+							};
+							TabCount = 4;
+						};
+						SplitCount = 1;
+						Tab1 = {
+							OptionsSetName = "Hierarchy, all classes";
+						};
+						TabCount = 5;
+					};
+				},
+			);
+			PBXWorkspaceGeometries = (
+				{
+					ContentSize = "{1280, 890}";
+					LeftSlideOut = {
+						ActiveTab = 0;
+						Collapsed = NO;
+						Frame = "{{0, 23}, {1280, 867}}";
+						Split0 = {
+							ActiveTab = 2;
+							Collapsed = NO;
+							Frame = "{{283, 0}, {997, 867}}";
+							Split0 = {
+								Frame = "{{0, 288}, {997, 579}}";
+							};
+							SplitCount = 1;
+							Tab0 = {
+								Debugger = {
+									Collapsed = NO;
+									Frame = "{{0, 0}, {572, 214}}";
+									Split0 = {
+										Frame = "{{0, 24}, {572, 190}}";
+										Split0 = {
+											Frame = "{{0, 0}, {279, 190}}";
+										};
+										Split1 = {
+											DebugVariablesTableConfiguration = (
+												Name,
+												123,
+												Value,
+												85,
+												Summary,
+												62.123,
+											);
+											Frame = "{{288, 0}, {284, 190}}";
+										};
+										SplitCount = 2;
+									};
+									SplitCount = 1;
+									Tab0 = {
+										Frame = "{{0, 0}, {100, 50}}";
+									};
+									Tab1 = {
+										Frame = "{{0, 0}, {100, 50}}";
+									};
+									TabCount = 2;
+									TabsVisible = YES;
+								};
+								Frame = "{{0, 0}, {572, 214}}";
+								LauncherConfigVersion = 7;
+							};
+							Tab1 = {
+								Frame = "{{0, 0}, {572, 125}}";
+								LauncherConfigVersion = 3;
+								Runner = {
+									Frame = "{{0, 0}, {572, 125}}";
+								};
+							};
+							Tab2 = {
+								BuildMessageFrame = "{{0, 0}, {999, 99}}";
+								BuildTranscriptFrame = "{{0, 108}, {999, 158}}";
+								Frame = "{{0, 0}, {997, 264}}";
+							};
+							Tab3 = {
+								Frame = "{{0, 0}, {572, 265}}";
+							};
+							TabCount = 4;
+							TabsVisible = YES;
+						};
+						SplitCount = 1;
+						Tab0 = {
+							Frame = "{{0, 0}, {259, 867}}";
+							GroupTreeTableConfiguration = (
+								TargetStatusColumn,
+								18,
+								MainColumn,
+								226,
+							);
+						};
+						Tab1 = {
+							ClassesFrame = "{{0, 0}, {247, 524}}";
+							ClassesTreeTableConfiguration = (
+								PBXBookColumnIdentifier,
+								20,
+								PBXClassColumnIdentifier,
+								204,
+							);
+							Frame = "{{0, 0}, {245, 867}}";
+							MembersFrame = "{{0, 533}, {247, 334}}";
+							MembersTreeTableConfiguration = (
+								PBXBookColumnIdentifier,
+								20,
+								PBXMethodColumnIdentifier,
+								203,
+							);
+						};
+						Tab2 = {
+							Frame = "{{0, 0}, {226, 549}}";
+						};
+						Tab3 = {
+							Frame = "{{0, 0}, {191, 867}}";
+							TargetTableConfiguration = (
+								ActiveObject,
+								16,
+								ObjectNames,
+								202.296,
+							);
+						};
+						Tab4 = {
+							BreakpointsTreeTableConfiguration = (
+								breakpointColumn,
+								138,
+								enabledColumn,
+								31,
+							);
+							Frame = "{{0, 0}, {191, 549}}";
+						};
+						TabCount = 5;
+						TabsVisible = YES;
+					};
+					StatusViewVisible = YES;
+					Template = F5F68CF101725D4C0D7A8F4C;
+					ToolbarVisible = YES;
+					WindowLocation = "{34, 50}";
+				},
+			);
+			PBXWorkspaceStateSaveDate = 80493284;
+		};
+		perUserProjectItems = {
+			FA1BFC04043DE4F901664092 = FA1BFC04043DE4F901664092;
+			FA35D5540442E3C901664092 = FA35D5540442E3C901664092;
+			FA3E2C7804504FA501664092 = FA3E2C7804504FA501664092;
+			FA3E2C7B04504FA501664092 = FA3E2C7B04504FA501664092;
+			FA3E2C7C04504FA501664092 = FA3E2C7C04504FA501664092;
+			FA421AD604BC048901664092 = FA421AD604BC048901664092;
+			FA563B4E04C6E71001664092 = FA563B4E04C6E71001664092;
+			FA82637104C87C1601664092 = FA82637104C87C1601664092;
+			FA8B5F860474FAAB01664092 = FA8B5F860474FAAB01664092;
+			FA8B5F880474FAAB01664092 = FA8B5F880474FAAB01664092;
+			FA8B5F890474FAAB01664092 = FA8B5F890474FAAB01664092;
+			FA8B5FA90474FF8801664092 = FA8B5FA90474FF8801664092;
+			FA8B5FAA0474FF8801664092 = FA8B5FAA0474FF8801664092;
+			FAA55D6504AAF6CC01664092 = FAA55D6504AAF6CC01664092;
+			FAA55D6804AAF6CC01664092 = FAA55D6804AAF6CC01664092;
+			FAB0015104CC393301664092 = FAB0015104CC393301664092;
+		};
+		projectwideBuildSettings = {
+		};
+		wantsIndex = 1;
+		wantsSCM = -1;
+	};
+	FA1BFB49043DDAA901664092 = {
+		activeExec = 0;
+	};
+	FA1BFC04043DE4F901664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+	FA35D5540442E3C901664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+	FA3E2C7804504FA501664092 = {
+		fRef = FA1BFB5A043DE35201664092;
+		isa = PBXTextBookmark;
+		name = "PkgInfo: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 9;
+		vrLoc = 0;
+	};
+	FA3E2C7B04504FA501664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+	FA3E2C7C04504FA501664092 = {
+		fRef = FA1BFB5A043DE35201664092;
+		isa = PBXTextBookmark;
+		name = "PkgInfo: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 9;
+		vrLoc = 0;
+	};
+	FA421AD604BC048901664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+	FA563B4E04C6E71001664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+	FA82637104C87C1601664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+	FA8B5F860474FAAB01664092 = {
+		fRef = FA8B5F8B0474FAAB01664092;
+		isa = PBXTextBookmark;
+		name = "jMaxVstMain.cpp: 14";
+		rLen = 0;
+		rLoc = 292;
+		rType = 0;
+		vrLen = 883;
+		vrLoc = 0;
+	};
+	FA8B5F880474FAAB01664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+	FA8B5F890474FAAB01664092 = {
+		fRef = FA8B5F8D0474FAAB01664092;
+		isa = PBXTextBookmark;
+		name = "jMaxVstMain.cpp: 14";
+		rLen = 0;
+		rLoc = 292;
+		rType = 0;
+		vrLen = 883;
+		vrLoc = 0;
+	};
+	FA8B5F8B0474FAAB01664092 = {
+		isa = PBXFileReference;
+		name = jMaxVstMain.cpp;
+		path = /Users/muller/Desktop/jmaxVST/jMaxVstMain.cpp;
+		refType = 0;
+	};
+	FA8B5F8D0474FAAB01664092 = {
+		isa = PBXFileReference;
+		name = jMaxVstMain.cpp;
+		path = /Users/muller/Desktop/jmaxVST/jMaxVstMain.cpp;
+		refType = 0;
+	};
+	FA8B5FA90474FF8801664092 = {
+		fRef = FA8B5FAC0474FF8801664092;
+		isa = PBXTextBookmark;
+		name = "KontrastMain.cpp: 27";
+		rLen = 0;
+		rLoc = 683;
+		rType = 0;
+		vrLen = 771;
+		vrLoc = 255;
+	};
+	FA8B5FAA0474FF8801664092 = {
+		fRef = FA8B5FAD0474FF8801664092;
+		isa = PBXTextBookmark;
+		name = "KontrastMain.cpp: 27";
+		rLen = 0;
+		rLoc = 683;
+		rType = 0;
+		vrLen = 771;
+		vrLoc = 255;
+	};
+	FA8B5FAC0474FF8801664092 = {
+		isa = PBXFileReference;
+		name = KontrastMain.cpp;
+		path = "/Users/muller/Desktop/Mes VST PLUGS/FFT tools/Kontrast/SRC/KontrastMain.cpp";
+		refType = 0;
+	};
+	FA8B5FAD0474FF8801664092 = {
+		isa = PBXFileReference;
+		name = KontrastMain.cpp;
+		path = "/Users/muller/Desktop/Mes VST PLUGS/FFT tools/Kontrast/SRC/KontrastMain.cpp";
+		refType = 0;
+	};
+	FAA55D6504AAF6CC01664092 = {
+		fRef = FAA55D6D04AAF6CC01664092;
+		isa = PBXTextBookmark;
+		name = "RobotizerMain.cpp: 3";
+		rLen = 0;
+		rLoc = 131;
+		rType = 0;
+		vrLen = 948;
+		vrLoc = 0;
+	};
+	FAA55D6804AAF6CC01664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+	FAA55D6D04AAF6CC01664092 = {
+		isa = PBXFileReference;
+		name = RobotizerMain.cpp;
+		path = "/Users/muller/Desktop/Mes VST PLUGS/FFT tools/Robotizer/SRC/RobotizerMain.cpp";
+		refType = 0;
+	};
+	FAB0015104CC393301664092 = {
+		isa = PBXTargetBookmark;
+		trg = FA1BFB49043DDAA901664092;
+	};
+}

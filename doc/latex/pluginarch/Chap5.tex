@@ -1,0 +1,94 @@
+%*************************************************************************
+% Chapter 5 of pluginarch.tex
+% Authors: Remy Muller & Vincent Goudard
+%*************************************************************************
+
+
+\chapter{Host environment integration}
+\noindent In order to work together, host and plugin have to know about each other both static and dynamic information. Some are fundamental other are optionnal, the options can vary a lot between standards. They can be either asked or told at any time, but construction-time -- or opening-time -- is more usual. We describe below the most important of them. 
+
+%-------------------------------------------------------------------------
+\section{General information}
+
+\subsection{Meta information}
+% Description: maker, vendor/company, version, copyright, plugin category
+\noindent For most standards it is possible to provide a plugin name, a vendor name, a description and a category. One should also have a way to add version number to a plugin as well as to have a way to ask the host's name and version for compatibility purpose\footnote{e.g. Plugins can declare their abilities depending on what hosts support and also depending on known bugs about one particular host.} It is much more convenient than providing dedicated versions of the same plugin for different versions and kind of host.
+
+%.........................................................................
+\subsection{Audio setup}
+\subsubsection{Audio pin properties}
+\noindent In this document, we assume that an audio input or output (pin) can be made of mono-channels grouped together that have to be treated as one entity. It makes sens when dealing with mono, stereo or surround channels. In a plugin graph or in a host context, a plugin can negotiate its connexions with other plugins or directly with the host. For that purpose, a plugin need to specify the total number of audio channels it supports and the way they have to be grouped if necessary. Character strings can often be provided to name the pins (see table \ref{pin}). Often there is only one input and one output pin with the same propeties (classical chained inserts), but in the case of instruments, multiple output pins are common (e.g. one by MIDI channels or one by drum sound in order to be compressed/equalize separately) and with spacializer, panner or down mixing plugins, input and output pin properties can be different (e.g. mono in - surround out). Moreover some channels can be tagged as side-chain.\\
+
+\begin{table}[htb]
+{
+\footnotesize
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+        & Type       & Channels & Name & Sidechain & Interleaved & IO switch.\\
+\hline
+VST     &32-bit float& any      &  yes &    yes    &    no       & in theory\\
+\hline
+AU      &32-bit float& any      &      &     no    &    both     & yes\\
+\hline
+LADSPA  &32-bit float& any      &  yes &     no    &    no       & no\\
+\hline
+RTAS    &32-bit float& any      &      &    yes    &    no       & no\\
+\hline
+DIRECTX &WaveFormatEx& any      &  yes &     no    &    Both     & in theory\\
+\hline
+MAS     &32-bit float& 11x11 max&  yes &    yes    &    no       & no\\
+\hline
+EYESWEB &32-bit float& any      &      &     no    &    no       & no\\
+\hline
+MAX-like&32-bit foat & any      &   no &    yes    &    no       & yes\\
+\hline
+\end{tabular}
+}
+\caption{Audio pins properties}
+\label{pin}
+\end{table}
+% #nb (dynamic nb switching?), SR,
+% Buffer size and allocation, grouping by bus
+% data type
+
+\subsubsection{Audio processing properties}
+% TODO: change this sentence plugin <-> host communication.
+\noindent A plugin can notify the environnement about its DSP properties. These properties include:
+\begin{itemize}
+\item{The buffer processing type :} `in place' or `buffer to buffer' as well as `accumulation' for send effects or `replacing' for inserts (LADSPA, DXi, EyesWeb)
+\item{The generation of a tail :} The tail is the part of the processed audio signal, added at the end of the stream processed\footnote{A tail will typically be generated in effects like reverbs, delays, time-streching \ldots }. (DXi\footnote{DXi does this dynamically in the process function.}, VST)
+\item{The latency :} The latency is the pure delay introduced by the computation\footnote{e.g. to compute a FFT at 44100Hz with 512 samples of hopesize, the latency would be 512/44100 = 11,5 ms.}. (VST)
+\item{The real-time quality :} In some plugin GUI, one can choose a lower quality (typically obtained by down-sampling) for the audio signal preview, to get faster computation. (VST, RTAS)
+\end{itemize}
+% Real time quality: DirectX: DXi? SF?
+% Tail, Latency, RT quality/ability, Buffer Processing, CPU consumption.
+
+
+%-------------------------------------------------------------------------
+\section{Runtime information}
+\noindent Audio plugin can often be used within a sequencer, where several tracks are arranged along a common timeline. During runtime, some plugin -- MAS, VST, DX-- can send or ask for time-information\footnote{Time information include tempo (bpm), time signature, temporal and/or musical position } about the position of the current timeslice being processed within this timeline. It is very useful to set parameters to musical meaningful values (e.g. a number of quarter note instead of a time in millisecond) or even sync some transformation patterns on the current position in a mesure.\\
+It is even possible with some standard -- MAS -- to send control information to the host, related to the sequencer run, like `start', `stop', `goto locator', `rewind' \ldots thus enabling beat-tracking algorithms to synchronize a host on a recorded performance track.\\
+% loop, record ...
+\noindent One may also be prepared with standards like VST, DirectX, that the sample-rate or the buffer size may change during runtime. Non power of 2 or even size of buffer are possible, so be careful.
+% SR, Buffer size
+
+
+%-------------------------------------------------------------------------
+\section{Acces to the plugin}
+
+\subsection{Plugin Location}
+\noindent Although plugins are usually stored at a common place, there is no real standard location for plugins storage. Still, one will often find a recommended path for the plugins location, to make things cleaner. The possibility for having multiple possible paths actually depends on the host. For some standards, it can be modified, either by adding new locations in an environnement variable (LADSPA) or by changing the path, or in the system register (DirectX), or browsing for a plugin during runtime. However this depends more on the host's strategy and on the OS than on the standard.
+
+%.........................................................................
+\subsection{Plugin ID}
+In order to be known by the host, a plugin should provide a unique way to be identified among other plugins: a '{\bf unique ID}'. Depending on the scope in which the host is assumed to seek to find the plugins, the ID may be a simple value, a more complex registration key.\\
+This ID can be made of 1 or many value(s), that is(are) assumed to be chosen different from other plugins' ID, {\bf by the plugin developer}. In this case, it is usually a long integer, or a combination of long integers: this is the case is LADSPA, AU, VST, RTAS, MAS,\ldots In the case of multiple IDs, one may find the manufacturer ID (AU, MAS, RTAS), a variation ID (MAS), a plugin-type ID (AU) \ldots Note that a plugin ID can be registered by the host manufacturer to become 'official' and avoid clashes with other third party developer's IDs.\\
+It is noteworthy to notice that the shared library files in which the plugins are compiled might contains several plugins -- this can be done in LADSPA, AU, MAS and VST (using a plugin shell\footnote{from one entry visible in the host you can access all the plugin from a manufacturer}) --. In this case, every plugin inside this library should have a unique ID.\\
+The other solution is specific to DirectX, and consists in {\bf registering the plugin-object in the system register} through GUID's (Globally Unique ID), which are 128-bit registration keys {\bf automatically generated by the system}.
+This solution has the advantage of avoiding identity clashes between plugins, because of developpers ignorance of all already existing plugins ID.The DirectShow filters used by Cakewalk and SonicFoundry as 'DirectX effects', and by EyesWeb for its modules use this mechanism.
+
+
+%.........................................................................
+\subsection{Entry points}
+\noindent  The plugin code stored within a \textit{Shared Object} or \textit{Dynamic Linked Librairy} file \footnote{These libraries are *.so files in Linux and *.dll in Windows} that may contain one or several plugins. The host application accesses the plugin by calling the \textit{Entry Point} function(s). The user then accesses the plugin thru the host's interface in a totally integrated way.
+ The Entry Point function will instantiate the plugin and provide information to the host.

@@ -1,0 +1,3 @@
+LIBRARY	LowPass
+DESCRIPTION 'Lowpass'
+EXPORTS main

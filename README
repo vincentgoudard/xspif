@@ -1,0 +1,47 @@
+---------------------------------------------------------------------------
+         XSPIF :  A cross (X) Standard PlugIn Framework
+
+Developed by Vincent Goudard and Remy Muller at IRCAM
+
+---------------------------------------------------------------------------
+
+
+What is XSPIF ?
+---------------------
+
+XSPIF is an environment allowing you to develop audio plugins through a unique XML specification, which can be parsed to generate automatically the 
+C/C++ source files of various plugins standards such as VST, LADSPA, AudioUnits, MAX/MSP.
+This environment offers you the following advantages:
+1. Implement your plugin once, export in many standards. 
+2. Reducing the time needed to develop a plugin by writing only the code
+necessary for your plugin behaviour.
+
+
+The development steps:
+1. Implement the XML file.
+2. Launch the python script with the following command:
+
+	python  xspif2DesiredStandard  myPlugin.xml
+
+    to generate the plugin C/C++ source files in the 'DesiredStandard'
+3. Compile your plugin C/C++ source files.
+
+
+
+The XSPIF environnement :
+-------------------------------------
+
+The Document Type Definition file 'xspif.dtd' specify the elements and attributes you should define in your XML plugin file.
+
+
+Limitations:
+---------------
+
+
+Requirements:
+-------------------
+
+To use XSPIF, you need:
+
+- python 2 or above
+- pyXML

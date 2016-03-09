@@ -1,0 +1,37 @@
+%***************************************************************************
+% Chapter 3 of pluginarch.tex
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+\chapter{The signal stream}
+
+
+
+%---------------------------------------------------------------------------
+\section{Nature of the signal stream}
+
+%...........................................................................
+%\subsection{Type - range}
+\noindent Most of the time, the signal stream is represented as floating-point samples in the intervall $[-1;1]$ full-scale. However some standards supports fixed-point samples\footnote{e.g. The CD format uses 16-bit signed integer samples allowing signal to be coded in the intervall $[2^{15}-1;-2^{15}]$ while the DVD uses 24-bit ones: range=$[2^{23}-1;-2^{23}]$} for historical or technical\footnote{DirectX, AudioUnits and TDM supports fixed-point samples because their plugins may deal directly with files, cd-rom, dvd-rom, soundcards or fixed-point DSP while other standards only deals with hosts for whom the floating point representation is more convenient.} reasons .\\
+For efficiency purpose, those samples are packed into buffers whose size can be fixed or variable from one call to the other. Though sample-by-sample processing\footnote{It allows feedback and recursion between objects and is very useful for `physical modeling'} is already used in some DSP libraries, there isn't already any standard doing the processing that way. The samplerate is supposed to be constant (and known) at least during the length of the buffer and may change at the buffer-rate though it is unusual\footnote{typically values like 44,1kHz for the CD, 48kHz for DAT or video and 96kHz for the DVD are used.}.\\
+Audio buffers can either be surrounded by additionnal information like time-stamps\footnote{It can be used for synchronisation purpose by the host scheduler when many complex audio paths are present.}(DXi, EyesWeb, AU), samplerate, buffer-size\ldots  or transmitted (most of the time) as simple arrays.\\ % TODO: who implements : sr, buffersize ...etc
+Some plugin API -- DX, AU -- allow channels interleaving for compatiblity with files types and streaming protocol, but it is quite marginal and tends to disappear at least for real-time processing. The most common (and easiest) way is to transmit channels as separated mono buffers.
+
+
+
+%---------------------------------------------------------------------------
+\section{Signal processing}
+
+\noindent Here we come to most important part of a plugin, almost every plugin standards have the same method called \verb|process()| to do the audio processing, only the way it is called and the arguments are different between standards. This method is either called directly by the host or by the next plugin in the chain in the case of graph-oriented hosts. Input and output buffers are, most of the time, provided by the host and can either be the same or different to allow in-place or buffer-to-buffer processing but the plugin can't assume one or another and should work correctly in both cases or specify if it suports it (LADSPA).\\
+
+\noindent As a major difference with hardware Digital Signal Processors, this method is assumed to be non interruptible. Therefore parameters interpolation (if needed) or other sample-accurate processing has to be done inside the process and can't be done automatically since processing audio by buffers prevent from audio-rate control as soon as the buffer-size exceeds 1 sample.
+
+
+
+%...........................................................................
+\section{General considerations about Digital Signal Processing}
+\noindent This section doesn't plan to explain rules of `audio processing algorithm optimization'. We just want to explicitely note that since audio-rates are measured in tenth of kHz and that plugins may handle several channels, the number of samples to process can become huge, thus one should pay special attention to the DSP algorithm complexity\footnote{In particular algorithms whose complexity is exponential or polynomial with the number of sample to process, shouldn't be used in a real-time context.}.\\
+
+\noindent Without going into assembler coding, one should avoid memory allocations, conditional expressions inside loops\footnote{It can break pipe-lining optimizations}, too many non-static-inline-function calls or intensive float--int conversion among other general programming tips. Note that in a lot of case down-sampling during the analysis step (e.g. in envelope detection) can save precious CPU time for other purpose.
+
+%----------------------------------EOF-------------------------------------%

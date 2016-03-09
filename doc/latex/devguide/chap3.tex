@@ -1,0 +1,203 @@
+%***************************************************************************
+% XSPIF developer's guide -  devguide.tex
+% Chapter : Translation from XML to C/C++
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+
+\chapter{Translation from XML to C/C++}
+
+%-------------------------------------------------------------------------
+\section{General scenario of the parsing}
+
+\noindent To generate the C/C++ source code from the meta-plugin \emph{filename.xspif}, in the plugin standard \emph{standard}, the user launches the script \verb|xspif.py| by typing:
+
+\begin{center}
+\textbf{python xspif.py \textit{standard filename}.xspif}
+\end{center}
+
+\noindent This will invoke:
+\begin{enumerate}
+\item \textbf{xspif.parsexml.validate} to validate the XML file with respect to the DTD and generate a DOM tree. The validation handles the XML syntax of the meta-plugin, i.e. it basically checks the name and number of elements, their place, and whether the required elements are present. However, this validation does not check the relevance of the data contained in these elements.
+\item \textbf{xspif.tools.generalCheck} performs additional standard-independant checkings of the XML elements.
+\item A folder is created where the meta-plugin is located, named after the meta-plugin filename, and a sub-folder named after the target standard name. The sources will be generated in this sub-folder.
+\item \textbf{xspif.\textit{standard}} The DOM tree is sent to the module corresponding to the target standard, where the C or C++ source code is written.
+\end{enumerate}
+
+%-------------------------------------------------------------------------
+\section{C vs C++ implementation}\label{CvsCplus}
+
+\noindent The choice has been made in XSPIF to let the user access to the parameters, states and pins directly by their label\footnote{For the pins, it is the label of the pin, to which the channel index is appended. See \cite{xspif:userguide}}. Since in C++, one can directly use the variable names from within the class scope without using explicitely \verb|this->|, the labels written in the meta-plugin can be directly used to name the members variables.\\  
+
+\noindent In the C implementation, one will find the same object oriented style. The class is replaced by a structure, which is passed to all callbacks. The problem is that the variable contained in this structure cannot be named directly, and should be explicitly accessed from the structure with the \verb|->| operator. To remedy to this problem, a local copy of all parameters and states contained in the plugin structure is done before they can be handled by their original name\footnote{The label declared in the meta-plugin.}. At the end of the callback, all these local variables are copied back to the plugin structure.\\
+\noindent This mechanism may look rather clumsy, since all the states and variables are not necessarily read or modified in the callback. However, the unused variables can easily be removed by the compiler, and hence do not burden the CPU cost.\\
+
+%-------------------------------------------------------------------------
+\section{Common implementation}
+
+\subsection{Headers}
+\noindent At the beginning of any standard's plugin source-file, just
+after the \code{\#includes}, should be pasted all the code contained
+in the sub-element \verb|<code>| of the element \verb|<plugin>| ``as-is''. The user
+should indeed write in this element the additionnal includes, as well
+as the local functions or macro he will need in his code.\\
+\noindent By \emph{independant function}, we mean routines not defined
+as callbacks in the XSPIF API, and which do not know more than what
+they are given as argument. Hence, they do not know the states, and
+parameters unless they are given them as argument.\\ 
+
+\subsection{XSPIF API: the macros}
+
+\begin{description}
+\item \textbf{XSPIF\_GET\_SAMPLE\_RATE} should be accessible from any
+  callback  defined by XSPIF, and as a consequence, should be declared
+  before them. It should return a float value corresponding to the
+  current sample rate (in Hertz). 
+\item \textbf{XSPIF\_GET\_VECTOR\_SIZE} should only be called within 
+  the process callback and return an integer value corresponding to
+  the current buffersize. 
+\item \textbf{XSPIF\_WRITE\_SAMPLE} can only be used in the process
+  callback. The macro should be redefined as we will see in LADSPA and
+  VST, for handling \textit{replacing} and \textit{accumulating}
+  automatically.\footnote{These two behaviours corresponding to the \emph{send}
+  and \emph{insert} we would find on a mixer console}  
+\item \textbf{XSPIF\_CONTROLOUT}  can be used both in the process
+  callback and in the code associated to the parameters, therefore, it
+  should be available in 2 ``flavours'': 
+\end{description}
+
+\subsection{Heading}
+\noindent At the very beginning of any standard's plugin source file, should be written a heading saying that the file is generated automaticlly, and containing information about the maker, the plugin name, copyright\ldots etc. This piece of code can be taken directly from the XSPIF modules for standards already implemented.\\
+
+\subsection{Includes}
+\noindent Then, just after the \code{\#includes}, should be pasted all the code from the sub-element \verb|<code>| of the element \verb|<plugin>|. The user should indeed write in this element the additionnal includes, as well as the independant routines he will need in his code.\\
+\noindent By ``independant routines'', we mean routines not defined as callbacks in the XSPIF API, and which do not know more than what they are given as argument. Hence, they do not know the states, and parameters unless they are given them as argument.\\
+
+
+%-------------------------------------------------------------------------
+\section{Implementing parameters}
+\subsection{Declaration}
+\noindent The parameters are always members of the plugin structure or
+class. It should be possible for the user to access the parameters
+value in any callback with the parameter label defined in
+the meta-plugin as it has been explained in \ref{CvsCplus}
+
+%..............................................
+\subsection{Mapping and boundaries}
+\noindent As much as possible, protection against parameters going out
+of range should be handled in the automatic code generation. It is
+often provided by the standard's API, but if not, this can be easily done 
+with the following macro, as it has been done for \verb|PD|.\\
+
+\code{\#define FIT\_RANGE(value, min, max)\\
+                        (((value) < min) ? min : ((value) > max) ? max : (value))}\\
+
+\noindent The mapping should be implemented, when the parameter
+values are not used directly. For example, parameters in VST are
+normalized between $[0;1]$. Thus, the mapping from a parameter value
+\emph{param} in the range [min, max] to its normalized
+representation\footnote{normalized value are used by the default GUI
+  to adress the position of their controls. For example, with a knob,
+  0.5 means in the midle, while 0.0 is full left and 1.0 is full
+  right}\emph{val} would be:\\ 
+
+\code{val = (param - min)/(max - min)}\\
+
+\noindent for a linear mapping, and: \\
+
+\code{val = (log(param) - log(min)) / (log(max) - log(min))}\\
+
+\noindent for a logarithmic mapping. \\
+
+\noindent Otherwise, in modular hosts where no plugin GUI is provided, it can be implemented as a comment to warn the plugin user, as it was done with method \code{print} generated by \verb|pd.py|, the module for PureData.
+
+%.............................................
+\subsection{Attached code}
+\noindent These piece of code are meant for parameters which need to
+recompute some values, and in particular: the states. Therefore the states
+should be directly available where this code is pasted.
+
+%-------------------------------------------------------------------------
+\section{Pins}
+\subsection{Declaration}
+\noindent The pins are named after their label and their number of
+channels with an index starting from 1. As an example if we have 2
+pins with their respective labels being input and sidechain, and with
+the first having 4 channels and the second only 1, we would declare
+input1, input2, input3, input4 and sidechain1. Each one is a
+pointer to a non-interleaved C-array corresponding to its channel.
+
+
+%-------------------------------------------------------------------------
+\section{Implementing callbacks}
+\noindent A callback is written as a block of C code by the user who can assume the availability of some variables. During the translation, this block of code is not analysed, and pasted --as is--. Hence, XSPIF does NOT prevent the user from writing wrong code; yet the compiler will most likely warn him by raising an error.\\
+\noindent As a general remark, when \emph{translating} a callback, the
+developer should do all the necessary, so that all the variables the
+meta-plugin writer may need are available\footnote{To know what the
+  user should await, please refer to
+  \cite{xspif:userguide}}\label{footnote}.  After the meta-plugin
+callback's code, should be written all the necessary to update any
+possible change of the variables the user could access.\\ 
+
+\subsection{instantiate}
+\noindent The plugin instanciation should be done automatically, with
+\code{malloc}, \code{new}, or any standard specific method. Since the
+user should do the memory allocation of the structures he needs in
+this callback, all the states and parameters should be available, even
+if not initialized.\\ 
+
+\subsection{deinstantiate}
+\noindent All the memory allocated by the user in his instantiate
+code, should be freed here by his deinstantiate code. So, again, all
+the variables the user could need should be available. The plugin
+class or structure de-instanciation should be done automatically,
+obviously \textbf{after} the structures de-instanciation, with
+\code{free}, \code{delete}, or any standard specific method.\\ 
+
+\subsection{activate / deactivate}
+\noindent Activate and deactivate callbacks are used to enable/disable
+the audio processing part of the plugin. If the plugin is deactivated,
+the audio stream should just flow from input to output without being
+modified, in a \emph{bypass} mode.\\ 
+\noindent This feature is already implemented in some standard like
+VST and LADSPA. For other standard, a flag can be set, that will be
+checked in the process callback.\\ 
+
+\subsection{process}
+\noindent The pointers to the input and output buffers should be
+available under the pin label, to which the channel index is appended,
+as declared in the meta-plugin.\\ 
+\noindent All the XSPIF macros defined previously should be known at
+that point, and XSPIF\_CONTROLOUT should be defined such that it does
+not kill the DSP thread safety (see next paragraph).\\ 
+
+%-------------------------------------------------------------------------
+\section{Implementing controlouts}
+\label{controlout}
+\noindent The macro \code{XSPIF\_CONTROLOUT} has been defined to
+handle control ouputs. When it is called outside the DSP thread
+(i.e. outside the \code{process} callback), the output value can be
+output directly, as soon as possible, the ``index'' argument being set
+to zero. 
+
+\noindent On the other hand, when \code{XSPIF\_CONTROLOUT} is called
+in the process callback, it is possible that outputting the value will
+not be real time safe\footnote{This is not the case for LADSPA
+  where it just consists in writing in a shared memory location}. In
+that case, depending on the host way of dealing with outputting control
+within the process callback, a clock can be set, so that the controlout 
+does not burden the real time constraints, and sample accurate synchronicity
+ can be achieved\footnote{with a constant delay however, corresponding
+   to the time-length of an audio buffer.} and the ``groove'' is
+ preserved.\\ 
+
+
+%-------------------------------------------------------------------------
+\section{Documentation}
+\noindent Last but not least, it has been made a part of the
+meta-plugin specification, to allow the user to add informative data,
+such as comments, captions, and units. These data should seriously be
+taken in account to generate the code, for both the person who might
+read the generated code, and the plugin user through the default
+GUI. So consider not forgetting this side of the framework.\\ 
+

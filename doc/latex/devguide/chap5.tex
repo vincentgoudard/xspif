@@ -1,0 +1,33 @@
+%***************************************************************************
+% XSPIF developer's guide -  devguide.tex
+% Chapter : perspectives
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+\chapter{Perspectives and TODOs}
+
+%-------------------------------------------------------------------------
+\section{Current limitations and known bugs}
+\subsubsection{C and C++}
+\noindent The current version of XSPIF imposes the C language, to be compliant with plugins usually written in C, namely LADSPA, PureData, and jMax\footnote{Though not done in the current version, this is one of the target standards}. It is possible to write LADSPA and PureData sources in C++ but we didn't explore that field. Maybe that would be nice to be able to write the meta-plugin code parts, in both C and C++, with an optionnal flag warning the XSPIF translator for that.
+
+%-------------------------------------------------------------------------
+\section{MIDI instrument}
+\noindent Though it is possible to develop simple synthesizers with XSPIF, MIDI suppoort to develop instruments is not yet implemented. This is partly due to the fact that MIDI is not currently supported by LADSPA.
+
+\section{Custom GUI support}
+\noindent Since the Graphical User Interface (GUI) is a critical part for cross plateform and standard development, it would be nice to be able to specify the GUI with an XML specification. Such attempt has already been raised for LADSPA by Paul Davis\footnote{see \cite{LADSPA:site}}, but is still at an early stage and meant for LADSPA only. In our case, we could imagine adding a $<gfx>$ tag which could specify the type of control widget for each parameter, its size and its position. If custom GUI support is added, it will help to take in account plugins standard which do not have default GUI like MAS or DX.
+
+%-------------------------------------------------------------------------
+\section{More with XML}
+\subsection{Document generation}
+\noindent Though incomplete and at a rather early stage, XSPIF has been modelized with perpectives of evolutions, by making the plugin design part totally independant of the standards conventions, and using flexible and cross-platform language like XML and Python.
+\noindent The benefit is that you can use the information of the meta-plugin to generate additional documents concerning the plugin, such as HTML documentation. For example, we can think of a general plugin's GUI, which could use this information.
+
+%-------------------------------------------------------------------------
+\section{User front end}
+\noindent Though faster and easier than writing C or C++ code, writing XML is not that funny. A graphical front end to implement the various elements of the meta-plugin, launch the source code generation, and compilation would be more friendly.
+
+%-------------------------------------------------------------------------
+\subsection{XSPIF meta-plugin repositories}
+\noindent As XSPIF meta-plugin files are written in XML, it is very easy to share them over the internet. We could imagine building a cooperative database where these files could be centralized, so that people could inspire from pre-existing works instead of re-inventing the wheel.

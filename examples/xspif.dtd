@@ -1,0 +1,44 @@
+
+<!ELEMENT plugin (caption?,comment?,code?,pin+,param*,controlout*,state*,callback*)>
+<!ATTLIST plugin label		CDATA #REQUIRED
+		 plugId  	CDATA #REQUIRED
+                 manufId 	CDATA #REQUIRED
+		 maker 		CDATA #IMPLIED
+		 copyright	CDATA #IMPLIED>
+		 
+<!ELEMENT caption 	(#PCDATA)>
+
+<!ELEMENT comment 	(#PCDATA)>
+
+<!ELEMENT code 		(#PCDATA)>
+
+<!ELEMENT pin (caption?, comment?)>
+<!ATTLIST pin 	label		CDATA	#REQUIRED
+		channels	CDATA	#REQUIRED
+		dir 	(In|Out)	#REQUIRED>
+		
+<!ELEMENT param (caption?,code?,comment?)>
+<!ATTLIST param label		CDATA	#REQUIRED
+		min 		CDATA 	#REQUIRED
+                max 		CDATA 	#REQUIRED
+		default 	CDATA 	#REQUIRED
+		type 	(float|int)	#REQUIRED
+		mapping (lin|log)	#REQUIRED
+		unit 		CDATA	#IMPLIED
+                noinlet         (false|true)   #IMPLIED>
+		
+<!ELEMENT controlout (caption?, comment?)>
+<!ATTLIST controlout label	CDATA	#REQUIRED 
+		min 		CDATA 	#REQUIRED
+                max 		CDATA 	#REQUIRED
+		type 	(float|int)	#REQUIRED
+		mapping (lin|log)	#IMPLIED
+		unit 		CDATA	#IMPLIED>
+
+<!ELEMENT state EMPTY>
+<!ATTLIST state label	CDATA		#REQUIRED
+		type 	CDATA		#REQUIRED>
+		
+<!ELEMENT callback	(code?)>
+<!ATTLIST callback label (process|processEvents|instantiate|deinstantiate|activate|deactivate) #REQUIRED>
+

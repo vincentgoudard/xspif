@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE plugin SYSTEM "xspif.dtd">
+
+<!--	
+	Commentaires
+	this File describe the beahavior of a simple delay line
+	intended to be translated into different plugins standards
+ -->
+ 
+<plugin  label="XspifDelay" plugId="'dlay'" manufId="'ViGo'" maker="Vincent Goudard" copyright="GPL">
+    <caption>Delay</caption>
+    <comment>A simple delay line.
+It is based on the delay implemented by Richard W.E. Furse for LADSPA.
+</comment>
+    <code><![CDATA[
+#include <math.h>
+#include <stdlib.h>
+#define MAX_DELAY 5
+
+/*****************************************************************************/
+
+#define LIMIT_BETWEEN_0_AND_1(x)          \
+(((x) < 0) ? 0 : (((x) > 1) ? 1 : (x)))
+#define LIMIT_BETWEEN_0_AND_MAX_DELAY(x)  \
+(((x) < 0) ? 0 : (((x) > MAX_DELAY) ? MAX_DELAY : (x)))
+    ]]></code>
+
+    <pin label="input" dir="In" channels="1">
+     <caption>Input</caption>
+     <comment>Some comments about Input</comment>
+    </pin>
+
+    <pin label="output" dir="Out" channels="1">
+     <caption>Output</caption>
+     <comment>Some comments about Ouput</comment>
+    </pin>
+
+    <param label="Delay" min="0." max="5." default="1" type="float" mapping="lin" unit="Second">
+      <caption>Delay Length (sec)</caption>
+      <comment>Delay length of the plugin</comment>
+    </param>
+
+    <param label="DryWet" min="0." max="1." default="1" type="float" mapping="lin" unit="%">
+      <caption>Mix dry/wet (%)</caption>
+      <comment>Percentage of wet/dry in the ouput</comment>
+    </param>
+
+
+    <state type="unsigned long" label="m_lBufferSize"></state>
+    <state type="unsigned long" label="m_lWritePointer"></state>
+    <state type="float *" label="Buffer"></state>
+
+
+    <callback label="instantiate"><code><![CDATA[
+
+    unsigned long lMinimumBufferSize;
+   
+    /* Buffer size is a power of two bigger than max delay time. */
+    lMinimumBufferSize = (unsigned long)((float)XSPIF_GET_SAMPLE_RATE() * MAX_DELAY);
+    m_lBufferSize = 1;
+    while (m_lBufferSize < lMinimumBufferSize)
+    	m_lBufferSize <<= 1;
+	
+    Buffer = (float *)malloc(m_lBufferSize * sizeof(float));
+ 
+    m_lWritePointer = 0;
+     ]]></code></callback>
+
+     <callback label="deinstantiate"><code><![CDATA[
+/* Throw away a simple delay line. */
+	free(Buffer);
+
+    ]]></code></callback>
+
+    <callback label="activate"><code><![CDATA[
+/* Need to reset the delay history in this function rather than
+     instantiate() in case deactivate() followed by activate() have
+     been called to reinitialise a delay line. */
+  memset(Buffer, 0, sizeof(float) * m_lBufferSize);
+
+    ]]></code></callback>
+
+    <callback label="deactivate"><code><![CDATA[
+    //clears internal states
+    ]]></code></callback>
+
+    <callback label="process"><code><![CDATA[
+    float fDry;
+    float fWet;
+    float fInputSample;
+    float fOutputSample;
+    unsigned long lBufferReadOffset;
+    unsigned long lBufferSizeMinusOne;
+    unsigned long lBufferWriteOffset;
+    unsigned long lDelay;
+    int SampleIndex;
+    
+    lBufferSizeMinusOne = m_lBufferSize - 1;
+    lDelay = (unsigned long)
+    (LIMIT_BETWEEN_0_AND_MAX_DELAY(Delay)*(XSPIF_GET_SAMPLE_RATE()));
+    lBufferWriteOffset = m_lWritePointer;
+    lBufferReadOffset = lBufferWriteOffset + m_lBufferSize - lDelay;
+    fWet = LIMIT_BETWEEN_0_AND_1(DryWet);
+    fDry = 1 - fWet;
+ 
+    for(SampleIndex = 0;
+    	SampleIndex < XSPIF_GET_VECTOR_SIZE();
+	SampleIndex++)
+    {
+    	fInputSample = input1[SampleIndex];
+  	fOutputSample = (fDry * fInputSample
+		     + fWet * Buffer[((SampleIndex + lBufferReadOffset)
+					& lBufferSizeMinusOne)]);
+	XSPIF_WRITE_SAMPLE(output1, SampleIndex, fOutputSample);
+	Buffer[((SampleIndex + lBufferWriteOffset)
+	      & lBufferSizeMinusOne)] = fInputSample;
+    }
+    m_lWritePointer
+    	= ((m_lWritePointer + XSPIF_GET_VECTOR_SIZE())
+	& lBufferSizeMinusOne);
+    ]]></code></callback>
+</plugin>

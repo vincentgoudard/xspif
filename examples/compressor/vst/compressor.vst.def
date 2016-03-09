@@ -1,0 +1,3 @@
+LIBRARY	Comp
+DESCRIPTION 'Compressor'
+EXPORTS main

@@ -1,0 +1,12 @@
+%*************************************************************************
+% Conclusion of pluginarch.tex
+% Authors: Remy Muller & Vincent Goudard
+%*************************************************************************
+
+
+\chapter{Conclusion}
+\noindent As we have seen through this document, from an abstract point of view, plugins standards looks very similar and share a lot of functionnalities. Some are very quick and simple to develop, like LADSPA, leaving the hard work to the host and the user (GUI, mapping), while other like DirectX or RTAS, have a harder learning curve because they give (too?) many possibilities to the plugin manufacturers (Custom GUI, handling of control surfaces or onboard DSP, automation, MIDI\ldots). Between we can find AudioUnits and VST trying to make ends meet through easy APIs to start with, but allowing still many possibilities for (quite) experienced programmers.
+
+\noindent However when looking into details, we can raise many differences. These differences are mostly dependent on the context in which the plugin standards were born. For historical, technical and commercial reasons, host manufacturers started on specific plateforms, targeting different kind of users and/or activities among audio-engineers, musicians, professionals, amateurs, post-production, multimedia, video \ldots. These initial constraints still remains present in standards because of backward-compatibility, despite the fact that since those early times companies and host have evolved, changed of plateform or even of customer's target.
+
+\noindent In this specific context, the GMPI\footnote{Generalized Musical Plugin Interface} group was formed, at the end of 2002, on the initiative of Ron Kupper from Cakewalk and under the authority of the MMA\footnote{MIDI Manufacturer Association}, to design a new open and cross-plateform plugin standard, that would meet everyone needs, and put in common all the experience accumulated by people since the first host and plugin systems. However there is still a long way before we can use and develop for a unique kind of plugin that would be easy and quick to develop, highly scalable and efficient. In the meantime, developping for different standards and plateforms is still necessary and time-consuming. Furthermore the choice of the supported standards is fundamental to determine the audience that will be targeted.

@@ -1,0 +1,1 @@
+xspif vst %1

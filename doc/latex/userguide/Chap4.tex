@@ -1,0 +1,465 @@
+%***************************************************************************
+% XSPIF user's guide -  userguide.tex
+% Chapter : XSPIF Tutorial
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+\chapter{XSPIF Tutorial}
+\label{tutorial}
+
+\section{Writing a XSPIF meta-plugin}
+
+\noindent A meta-plugin is a XML file beginning with a header
+specifying its syntax and followed by the various elements described 
+in the last section organized in an arborescent structure whose root
+is $<plugin>$\\
+\noindent This chapter will explain how to write the meta-plugin with
+detailed information on each specific elements, their hierarchy and examples of implementation.\\
+
+\subsection{The header}
+\noindent Each XSPIF meta-plugin description has to begin with the following header:
+\begin{verbatim}
+<?xml version="1.0"?>
+<!DOCTYPE plugin SYSTEM "xspif.dtd">
+\end{verbatim}
+The first line specifies which version of XML is used and the second
+line informs the parser where to find the the Document Type Definition
+(i.e. the syntaxic rules telling how a xspif file has to be written to be
+correct from the XML point of view).
+
+\subsection{$<plugin>$}
+\label{plugin}
+\noindent This is the main tag which is the unique root of the tree.
+
+\begin{itemize}
+
+\item Attributes: 
+\begin{description}
+\item[$label$] It will be used to name the plugin class or structure and
+  shouldn't have spaces in it.
+\item[$plugId$] It should be either a four character constant
+  into simple quotes, or an 32-bit unsigned integer identifying the
+  plugin. It should be unique.
+\item[$manufId$] another ID to be sure that the plugin can be uniquely identified.
+\item[$maker$] [optionnal] a string describing the plugin maker
+\item[$copyright$] [optionnal] a string to specify the copyright if
+  needed. It will be used into the generated sources.
+\end{description}
+
+\item Elements:
+\begin{description}
+\item[$<caption>$] [optionnal] A string describing the plugin
+\item[$<comment>$] [optionnal] a tag to add global comments to your code
+\item[$<code>$] [optionnal] you can declare local variables, macros,
+  functions and additionnals includes segments on top of your file
+  which \textbf{has to} be inside a \verb|<![CDATA[...]]>| tag so that
+  your code is not analyzed by the parser and can be pasted directly into your
+  generated source file(s) ``as-is''.  
+\item[$<pin>$] [1 or more] A pin is a port through which the audio signal flows. A
+  pin is either input or output and can be multi-channels. see below \ref{pin}
+\item[$<param>$] [0 or more] A param is a port for the control input, available to
+  the plugin user and to the host. see below \ref{param}
+\item[$<controlout>$] [0 or more] A controlout is a port for outputting control
+  back to the host or to other plugins when possible. see below \ref{controlout}
+\item[$<state>$] [0 or more] A state is keeping an internal information necessary
+  for the behaviour of the plugin, but not available to the plugin
+  user. see below \ref{state}
+\item[$<callback>$] [0 or more] There is a finite number of callbacks,
+  which implement the behaviour of the plugin, namely:
+  \textit{instantiate, deinstantiate, activate, deactivate}, and
+  \textit{process}. see below \ref{callback}
+\end{description}
+
+\item Example:\\
+\noindent This example defines a plugin (the root element of the XML
+tree) whose label is \verb|LowPass| with the plugin ID
+\verb|'lowp'| and the manufacturer ID \verb|ReMu|. There are
+additionnal information about the maker which is rémy muller and the
+copyright which is GPL. this plugin contains a caption \verb|Lowpass|
+intented to be a human-readable name, some comments to describe the
+plugin and a piece of code which includes an additionnal header and
+defines a local function which will be used during by the DSP
+algorithm. Note that the $<plugin>$ tag is not closed because it will
+also contain child elements.
+
+\begin{verbatim}
+<plugin  label = "LowPass" plugId="'lowp'" manufId="'ReMu'" 
+         maker="Remy Muller" copyright="GPL">
+
+    <caption>Lowpass</caption>
+    <comment>A simple lowpass with saturation</comment>
+    <code><![CDATA[
+    #include <math.h>
+    /******************************************/
+    /* independent code here */
+    static float saturate(float x)
+    {
+    if(x>0.f)
+        x = 2.f*x-x*x;
+    else
+        x=  2.f*x + x*x;
+    return x;
+    }
+    /******************************************/
+    ]]></code>
+</plugin>
+\end{verbatim}
+\end{itemize}
+
+
+\subsection{$<pin>$}
+\label{pin}
+\noindent Audio Ports are declared as pins, which means that a single
+stereo input is represented by 1 pin with 2 channels and direction =
+In.
+
+\begin{itemize}
+\item Attributes:
+\begin{description}
+\item[$label$] It will be used to name the audio buffers
+  associated to the pin inside the DSP algorithm.
+\item[$dir$] It tells if the pin is an input or an output.
+\item[$channels$] It specifies the number of channels inside the pin.
+\end{description}
+
+\item Elements:
+\begin{description}
+\item[$<caption>$] [optionnal] the friendly name of the pin.
+\item[$<comment>$] [optionnal] some comments about the pin.
+\end{description}
+
+\item Example:\\
+ \noindent Here we define a stereo audio pin which direction is an
+ input, its label is input which means that the input buffers will be
+ known as \verb|input1[]| and \verb|input2[]|. There is also a caption
+ which can be used to show the pins name to the final user and some
+ comment to document the code.
+\begin{verbatim}
+<pin label="input" dir="In" channels="2">
+    <caption>Stereo Input</caption>
+    <comment>This is a stereo input pin</comment>
+</pin>
+\end{verbatim}
+\end{itemize}
+
+\subsection{$<param>$}
+\label{param}
+\noindent The parameters are the plugin variables that the user can
+control. They can be used either directly inside the process or converted
+into internal states.
+
+\begin{itemize}
+\item Attributes:
+\begin{description}
+\item[$label$] It will be used to name the parameter. Its value is
+  stored inside the plugin class or structure and is always available
+  when calling it directly by the label.
+\item[$min$] It specifies the minimum value that the parameter can take
+  and should be less than max and default.
+\item[$max$] It specifies the maximum value that the parameter can
+  take and should be strictly superior than min and default.
+\item[$default$] It specifies the default value that the parameter can
+  take and should be in the range $[min;max]$
+\item[$type$] can be float or int.
+\item[$mapping$] can be lin for linear or log for logarithmic. Default
+  is linear.
+\item[$unit$] [optionnal] a string for GUI display.
+\item[$noinlet$] [optionnal] can be ``true'' or ``false'', default is
+  ``false''. It is only used in modular hosts so that not all parameters
+  appear as an input.  
+\end{description}
+
+\item Elements:
+\begin{description}
+\item[$<caption>$] [optionnal] the friendly name of the parameter.
+\item[$<comment>$] [optionnal] some comment about this parameter.
+\item[$<code>$] [optionnal] each parameter change can trigger a piece of code to update the plugin's states, or ouptput a control value for example.
+  cf. \ref{plugin} 
+\end{description}
+
+\item Example:\\
+\noindent Here we define a cutoff parameter for a filter, in the range [100, 10000] Herz, 
+with a default value of 1000 Hz. It has a logarithmic mapping, because it is more 
+convenient for a frequency. This parametere has an associated piece of
+code which is triggered when the parameter changes to actualize the
+internal state \verb|lambda|. We can also note that in this
+computation, the parameter is directly known from its label
+(\verb|cutoff|) and that it also requires the samplerate which is
+accessed with a macro defined in the XSPIF API.
+\begin{verbatim}
+<param label="cutoff" min="100.0" max="10000.0" default="1000.0" 
+       type="float" mapping="log" unit="Hz">
+    <caption>Cutoff frequency (Hz)</caption>
+    <code><![CDATA[
+    // cutoff and samplerate are both in Hertz
+    lambda = exp(- cutoff / XSPIF_GET_SAMPLE_RATE()); 
+    ]]></code>
+    <comment>This is the cutoff frequency of the plugin</comment>
+</param>
+\end{verbatim}
+\end{itemize}
+
+\subsection{$<state>$}
+\label{state}
+\noindent The states are all the variables stored inside the plugin,
+different from the parameters and that are necessary for the DSP
+algorithm -- e.g. you can map cutoff and resonance parameters to
+internal filter coefficients -- . Note that, as states can be of any
+type and to be compatible with both C and C++, they should be
+manually allocated with \verb|malloc()| (or \verb|calloc()|) and freed
+with \verb|free()|.
+
+\begin{itemize}
+\item Attributes:
+\begin{description}
+\item[$label$] It will be used to name the state. Their value is stored
+  inside the plugin class or structure and are always available when
+  calling them directly by their label.
+\item[$type$]  type can be anything either buit-in types or user defined.
+\end{description}
+
+\item Example of two internal states; one of type float, and a pointer 
+to a buffer of floats:
+\begin{verbatim}
+ <state type="float" label="lambda"></state>
+ <state type="float *" label="buffer"></state>
+\end{verbatim}
+\end{itemize}
+
+\subsection{$<controlout>$}
+\label{controlout}
+\noindent 
+
+\begin{itemize}
+\item Attributes:
+\begin{description}
+\item[$label$] It will be used as a selector used when sending control
+  outside of the plugin.
+\item[$min$] It specifies the minimum value that the parameter can take
+  and should be less than max and default.
+\item[$max$] It specifies the maximum value that the parameter can
+  take and should be strictly superior than min and default.
+\item[$type$] can be float or int
+\item[$mapping$] [optionnal] can be lin for linear or log for
+  logarithmic. Default is linear.
+\end{description}
+
+\item Elements:
+\begin{description}
+\item[$<caption>$] [optionnal] cf. \ref{plugin} 
+\item[$<comment>$] [optionnal] cf. \ref{plugin} 
+\end{description}
+
+\item Example:\\
+ \noindent A controlout called \verb|env| for outputting the enveloppe
+ of an audio signal, the min, max and mapping are used when this is
+ necessary to scale the value to put it into a specific range
+ (e.g. 0-127 for MIDI CC or 0-1 for normalized parameters\ldots)
+\begin{verbatim}
+<controlout label="env" min="0.0" max="10000.0" type="float" mapping="log">
+    <caption>Enveloppe</caption>
+    <comment>Peak amplitude envelope</comment>
+</controlout>
+\end{verbatim}
+\end{itemize}
+
+
+\subsection{$<callback>$}
+\label{callback}
+\noindent The callbacks are not mandatory, so that one can generate
+templates. On the other side, having the same callback twice or more
+isn't allowed as it wouldn't be meaningful.
+
+\begin{description}
+
+\item \textbf{instantiate}
+\noindent is the callback where the user should implement the memory
+allocation of all structures he will need with \code{malloc} or
+\code{calloc}. Initialization of the states can also be done here. 
+
+\item \textbf{deinstantiate}
+\noindent is the callback where the user should free the memory allocated for the structures in \textit{instantiate} with \code{free}.
+
+\item \textbf{activate}
+\noindent is called every time the plugin user of host switch
+on the plugin. The states can be reinitialized if needed (for example, 
+by clearing a buffer used in a delay, so that the delay does not ring 
+again when the plugin is re-activated). The parameters should not usually
+not be reinitialized, though this is not forbidden.
+\noindent If a structure depends on the sample rate (e.g. a delay
+buffer), it can be the right place to check if it has changed, and in
+this case, reallocate the memory for this structure. 
+
+\item \textbf{deactivate}
+\noindent is called every time the plugin user of host switch off the
+plugin. The states can be reinitialized if needed. The parameters
+should usually not be reinitialized, though this is not forbidden. 
+
+\item \textbf{process}
+\noindent is the callback where the user should implement the DSP
+algorithm. 
+\end{description}
+
+\begin{itemize}
+
+\item Attributes:
+\begin{description}
+\item[$<label>$] the label can be any of instantiate (constructor),
+  deinstantiate (destructor), activate (on), deactivate (off),
+  process.
+\end{description}
+
+\item Elements:
+\begin{description}
+\item[$<code>$] [optionnal] The code which will be associated to the callback
+  defined by \textit{label}. cf. \ref{plugin} 
+\end{description}
+
+\item Examples:\\
+\noindent Here we define the \emph{process} callback which, as all the
+callback, only contains a piece of code. Note that there are 2 macros
+from the XSPIF API that are used in this example:
+$XSPIF\_GET\_VECTOR\_SIZE()$ to know the size of the current buffer
+and $XSPIF\_WRITE\_SAMPLE()$ to write the processed samples to the the
+output buffers.
+\begin{verbatim}
+<callback label="process">
+    <code><![CDATA[
+    int i = 0;
+    for(i=0;i < XSPIF_GET_VECTOR_SIZE();i++)
+    {
+      // in and out names are derived from the label in the pin declaration
+      lp1 = (1.f-lambda)*input1[i] + lambda*lp1;
+      lp2 = (1.f-lambda)*input2[i] + lambda*lp2;
+      XSPIF_WRITE_SAMPLE(output1, i, saturate(lp1));
+      XSPIF_WRITE_SAMPLE(output2, i, saturate(lp2));  
+    }
+   ]]></code>
+</callback>
+\end{verbatim}
+
+\begin{verbatim}
+<callback label="instantiate">
+    <code><![CDATA[
+    // Initialize the internal states
+    lambda = lp1 = lp2 = 0.;
+    ]]></code>
+</callback>
+\end{verbatim}
+
+\begin{verbatim}
+<callback label="deactivate">
+    <code><![CDATA[
+    // clears memories so that no sound is output
+    // when plugin is reactivated with no input
+    lp1 = lp2 = 0.;
+    ]]></code>
+</callback>
+\end{verbatim}
+\end{itemize}
+
+\subsection{XSPIF API}
+\noindent XSPIF API is quite simple and is limited to a few macros
+required to have a full abstraction from the plugin standards behind
+XSPIF. Their meaning is explained here after, as well as the part of
+the code in which they are allowed.
+\noindent \emph{None of these macros are available in the code
+  elements associated to the $<plugin>$ element} 
+\begin{itemize}
+\item $XSPIF\_WRITE\_SAMPLE(dest,index,value)$: \\
+  It handles automatically adding or replacing process according to the standard.\\
+  Availability:  process callback only.\\
+  $dest$ has to be a pointer on a float array.\\
+  $index$ is the index in  this array.\\
+  $value$ is the  value to be written to the  array.
+\item $XSPIF\_CONTROLOUT(label,index,value)$: \\
+  It handles control outputs, with sample accuracy in the process callback.\\
+  Availability: process callback and parameters' attached code.\\
+  $label$ is the label given in the corresponding controlout tag and is
+  used as selector for sending control.\\
+  $index$ if the offset in  samples relative to the current buffer inside
+  the process callback or zero if used outside.\\
+  $value$ is the value to be sent outside the
+  plugin and can be converted automatically to a specific range
+  depending on the standard (e.g. 0 to 127 if MIDI CC are used).
+\item $XSPIF\_GET\_SAMPLE\_RATE()$: \\
+  It returns a 32-bit float value corresponding to the actual sample-rate
+  in Hz (44100Hz by default).\\
+  Availability: any callback, and in the parameters' attached code.
+\item $XSPIF\_GET\_VECTOR\_SIZE()$: \\
+  It returns an integer value corresponding to the current vector size
+  i.e. the size of the current size of the buffer to process.\\
+  Availability: process callback only.
+\end{itemize}
+
+\subsection{C vs C++}
+\noindent As some of the standards supported by XSPIF are natively
+written in the C language and that the C++ syntax is compatible with
+C, it has been decided that the code has to be written in C inside the
+meta-plugin description. However if you only plan to use standards
+written in C++ you still can use C++ inside the meta-plugin as it is
+just a matter of copy and paste, but you'll lose the advantage of
+quickly porting your algorithm to many standards.
+
+\section{Code generation}
+\noindent Now that you have a well writen meta-plugin inside your
+xspif file, you'll want to generate the sources for you plugin. For
+that purpose, there is a python script located in \verb|xspif/python|
+named \verb|xspif.py|. the syntax is:
+\begin{center}
+\textbf{python xspif.py \textit{standard} [\textit{path}]/\textit{filename}.xspif}
+\end{center}
+ If we are inside xspif dsitribution, we could type:
+\begin{center}
+\textbf{python python/xspif.py vst examples/lowpass.xspif}
+\end{center}
+
+\noindent Note that you can replace the standard by `\textbf{all}' which will write the sources for all the supported plateforms.
+
+\section{Compilation and integration}
+
+\subsection{Windows}
+\subsubsection{VST}
+\noindent With visual C++, create a new empty ``win32 dynamic-link
+library''project. Add \emph{yourplugin}.vst.cpp (which describes you plugin) and
+\emph{yourplugin}.def (which exports the entry point of your
+library) and be sure that your include directories point to the vstsdk
+headers. if you're experienced with Visual C++, you can also integrate
+the XSPIF script as the first step of your building process using
+``custom build''.
+\subsubsection{Pure Data}
+\noindent A makefile is generated automatically by XSPIF for PureData, but you will also need Microsoft Visual C++.\\
+\noindent To build the plugin binary, open the windows shell and type \verb|nmake pd_nt| in the folder where the PureData source are. The makefile is assuming some paths for PureData and Visual Studio: edit the Makefile if these paths do not match yours.\\
+
+\subsection{Linux}
+\noindent A makefile is generated automatically by XSPIF for LADSPA and PureData.\\
+\noindent For LADSPA:
+\begin{itemize}
+\item \verb|make| builds the dynamic library.
+\item \verb|make install| builds the plugin and copy it in the LADSPA directory. Thus the environment variable LADSPA\_PATH should be defined, as recommanded by the Linux Audio Developers.\\
+\item \verb|make clean| remove objects, temporary and core files.
+\end{itemize}
+
+\noindent For PureData:
+\begin{itemize}
+\item \verb|make pd_linux| builds the dynamic library.
+\item \verb|make clean| remove the plugin binary, and objects, and core files.
+\end{itemize}
+
+\subsection{Mac OSX}
+\subsubsection{VST and AudioUnits}
+\noindent  It is a good choice for VST and AudioUnits to use
+Project Builder as IDE\footnote{Integrated Development
+  Environment}. Using XSPIF with Project Builder just consist in adding the
+script above as the first step of your building process. That way you
+can generate new sources each time you want to build your plugin.
+Please refer to the ProjectBuilder examples provided with the XSPIF distribution as a
+base for your own work.
+
+\subsubsection{PureData}
+\noindent For PD, the makefile generated automatically is quite 
+straight forward: Open a shell, and type \verb|make pd_darwin|
+in the directory where the plugin's source files are.
+
+
+

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE plugin SYSTEM "xspif.dtd">
+
+<!--	
+	Commentaires
+	this File describe thebeahavior of a simple lowpass filter
+	intended to be translated into different plugins standards
+ -->
+ 
+<plugin  label = "EnvFollower" plugId="'envf'" manufId="'IRCA'" maker="Vincent Goudard" copyright="GPL">
+    <caption>Envelope follower</caption>
+    <comment>
+This is a simple envelope follower which code was taken from www.musicdsp.org
+This example is meant to make use of the control outputs.
+	 </comment>
+
+    <code><![CDATA[
+#include <math.h>
+    ]]></code>
+
+    <pin label="input" dir="In" channels="2">
+     <caption>Stereo input</caption>
+     <comment>Stereo</comment>
+    </pin>
+
+    <pin label="output" dir="Out" channels="2">
+     <caption>Stereo output</caption>
+     <comment>Stereo</comment>
+    </pin>
+
+    <param label="attack" min="1" max="500" default="10" type="float" mapping="lin" unit="ms">
+      <caption>Attack time</caption>
+      <code><![CDATA[
+	//attack in milliseconds
+	attack_coef = (float) exp(-10/(XSPIF_GET_SAMPLE_RATE()*attack*0.001));
+      ]]></code>
+      <comment>This is the release time in ms of the envelope follower</comment>
+    </param>
+
+    <param label="release" min="1" max="500" default="100" type="float" mapping="lin" unit="ms">
+      <caption>Release time</caption>
+      <code><![CDATA[
+	// release in milliseconds
+	release_coef = (float) exp(-10/(XSPIF_GET_SAMPLE_RATE()*release*0.001));
+	XSPIF_CONTROLOUT(env, 0, envelope);
+      ]]></code>
+      <comment>This is the attack time in ms of the envelope follower</comment>
+    </param>
+
+    <controlout label="env" min="-1" max="1" type="float" mapping="lin">
+      <caption>Enveloppe value</caption>
+      <comment>This is the envelope value.</comment>
+    </controlout>
+
+    <state type="float" label="envelope"></state>
+    <state type="float" label="attack_coef"></state>
+    <state type="float" label="release_coef"></state>
+
+
+    <callback label="activate"><code><![CDATA[
+    //clear envelope
+    envelope = 0.0;
+    ]]></code></callback>
+
+    <callback label="deactivate"><code><![CDATA[
+    //clear envelope
+    envelope = 0.0;
+    ]]></code></callback>
+
+    <callback label="process">
+    <code><![CDATA[
+    int i;
+    float tmp = 0;
+    for(i=0; (i < XSPIF_GET_VECTOR_SIZE()); i++)
+        {	
+	    tmp = 0.5*(fabs(input1[i])+fabs(input2[i]));
+            if (tmp > envelope)
+	      envelope = attack_coef * (envelope - tmp) + tmp;
+            else
+              envelope = release_coef * (envelope - tmp) + tmp;
+
+	    // Output the inputs
+	    XSPIF_WRITE_SAMPLE(output1, i, input1[i]);
+	    XSPIF_WRITE_SAMPLE(output2, i, input2[i]);
+    	}
+    XSPIF_CONTROLOUT(env, 0, envelope);
+    ]]></code></callback>
+</plugin>

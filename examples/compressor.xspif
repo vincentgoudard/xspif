@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE plugin SYSTEM "xspif.dtd">
+
+<plugin  label="Comp" plugId="'MCMP'" manufId="'mdsp'" maker="mdsp @ smartelectronix" copyright="GPL">
+    <caption>Compressor</caption>
+    <code><![CDATA[
+#include <math.h>
+    ]]></code>
+    
+    <pin label="input" dir="In" channels="2">
+     <caption>Input</caption>
+     </pin>
+
+    <pin label="output" dir="Out" channels="2">
+     <caption>Output</caption>
+    </pin>
+
+    <param label="attack" min="10.0" max="50.0" default="10.0" type="float" mapping="lin" unit="ms">
+      <caption>Attack</caption>
+      <code><![CDATA[
+      // 2.2 is the compensation factor to define attack time as t90-t10
+      ga = (float)exp(-2.2/(XSPIF_GET_SAMPLE_RATE()*(attack*0.001))); 
+      ]]></code>
+    </param>
+    
+    <param label="release" min="10.0" max="500.0" default="100.0" type="float" mapping="lin" unit="ms">
+      <caption>Release</caption>
+      <code><![CDATA[
+      // 2.2 is the compensation factor to define attack time as t90-t10
+      gr = (float)exp(-2.2/(XSPIF_GET_SAMPLE_RATE()*(release*0.001)));
+      ]]></code>
+    </param>
+
+     <param label="threshold" min="-40.0" max="0.0" default="-10.0" type="float" mapping="lin" unit="dB">
+      <caption>Threshold</caption>
+      <code><![CDATA[
+      cThres = pow(10.0,threshold/20);
+      makeup = pow(10.0, -(threshold*cSlope)/20.0);
+      ]]></code>
+    </param>
+
+    <param label="ratio" min="1.0" max="40.0" default="6.0" type="float" mapping="lin" unit=" : 1">
+      <caption>Ratio</caption>
+      <code><![CDATA[
+      cSlope = 1.0 - 1.0/ratio; // 2:1 <-> 40:1
+      makeup = pow(10.0, -(threshold*cSlope)/20.0);
+      ]]></code>
+    </param>
+
+    <param label="preamp" min="0.0" max="40.0" default="0.0" type="float" mapping="lin" unit="dB">
+      <caption>Preamp</caption>
+      <code><![CDATA[
+      boost = pow(10.,preamp/20.0);
+      ]]></code>
+    </param>
+
+    <param label="volume" min="-40.0" max="0.0" default="0.0" type="float" mapping="lin" unit="dB">
+      <caption>Volume</caption>
+      <code><![CDATA[
+      attenuation = pow(10.,volume/20.0);
+      ]]></code>
+    </param>
+
+   <state type="float" label="ga"></state>
+   <state type="float" label="gr"></state>
+   <state type="float" label="cThres"></state>
+   <state type="float" label="cSlope"></state>
+   <state type="float" label="boost"></state>
+   <state type="float" label="makeup"></state>
+   <state type="float" label="last_peak"></state>
+   <state type="float" label="last_gain"></state>
+   <state type="float" label="attenuation"></state>
+ 
+    <callback label="instantiate"><code><![CDATA[
+    ga = gr = boost = attenuation = makeup = cSlope = cThres = 0;
+    last_peak = last_gain = 0;
+    ]]></code></callback>
+
+    <callback label="deactivate"><code><![CDATA[
+    last_peak = last_gain = 0;    
+    ]]></code></callback>
+
+    <callback label="process"><code><![CDATA[
+    float gain, delta_peak, in1, in2;
+    int i;
+    for(i=0;i < XSPIF_GET_VECTOR_SIZE();i++)
+    {
+      in1 = boost * input1[i];
+      in2 = boost * input2[i];
+      
+      // get peak data: 
+      // if greater than last peak, add difference filtered with attack time
+      // else let decay with release time
+      delta_peak = 0.5*(fabs(in1) + fabs(in2)) - last_peak;
+      if (delta_peak<0) delta_peak = 0;
+      last_peak *= gr;
+      last_peak += (1.0-ga)*delta_peak;
+
+      if(last_peak>cThres)
+	gain = pow(last_peak/cThres, - cSlope); //compression
+      else 
+	gain = 1.f; // no compression
+
+      //filter w/ attack and release
+      if(last_gain < gain)
+	{
+	  last_gain *= 1.0-ga;
+	  last_gain += ga*gain;
+	}
+      else
+	{
+	  last_gain *= 1.0-gr;
+	  last_gain += gr*gain;
+	}
+      
+      // write y(n) = postamp * g(n) * makeup * x(n)
+      XSPIF_WRITE_SAMPLE( output1, i, attenuation * last_gain * makeup * in1);
+      XSPIF_WRITE_SAMPLE( output2, i, attenuation * last_gain * makeup * in2);
+    } 
+    ]]></code></callback>
+</plugin>

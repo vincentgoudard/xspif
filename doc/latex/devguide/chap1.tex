@@ -1,0 +1,75 @@
+%***************************************************************************
+% XSPIF developer's guide -  devguide.tex
+% Chapter : concepts
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+
+\chapter{Introduction}
+
+%-------------------------------------------------------------------------
+\section{About XPSIF}
+\noindent XSPIF is born after a study \cite{pluginarch} of existing audio plugin standards, namely: Steinberg's VST, Apple's AudioUnit, LADSPA, Cakewalk's DXi; as well as objects in modular softwares such as MAX/MSP\footnote{MAX/MSP from Cycling '74: \url{http://www.cycling74.com}}, jMax\footnote{jMax from IRCAM: \url{http://www.ircam.fr}}, PureData\footnote{Pure Data from Miller Puckette: \url{http://www.pure-data.org}}, and EyesWeb\footnote{EyesWeb from Laboratorio di Informatica Musicale: \url{http://www.eyesweb.org}}.
+\noindent This study helped deducing a synthetic abstraction from the existing standards, to ease the development of audio plugins, with the underlying guideline: \textit{``Write once, export many.''}\\
+
+\noindent The XML language was chosen to store the data needed to
+design an audio plugin. Its syntax is independant from any language,
+and platform, and it is highly flexible. The blocks of code are
+written in the standard ANSI C\footnote{C++ is also possible, but it
+  narrows the scope of the exported standards}
+language, which is also platefom independant.\\ 
+
+%-------------------------------------------------------------------------
+\section{Semantics}
+\noindent To help make things clearer, let us define some terms we will refer to in this manual, to name actors, objects and actions. 
+
+\subsubsection{Peoples:}
+\begin{itemize}
+\item{A \textbf{XSPIF user}} (or simply ``user'') is a person who aims
+  at developping audio plugins, with the XSPIF assistance. This person
+  should only have some basic knowledge of the C language, which was
+  chosen for writing the callbacks in XSPIF. 
+
+\item{A \textbf{XSPIF developer}} (or simply ``developer'') is a
+  person who develops XSPIF to add new features or standards to its
+  scope. This person should know C/C++, XML, and Python. 
+
+\item{A \textbf{plugin user}} is a person who uses audio plugins in an
+  audio software called `host'. This person can know nothing at all
+  about computer programming. 
+\end{itemize}
+
+\subsubsection{Objects:}
+\begin{itemize}
+\item{A \textbf{meta-plugin}}: is a XML spefication which contains the
+  ``essence'' of the plugin: i.e. everything needed to describe the
+  plugin's features and behaviour. The meta-plugins are stored in files
+  using the \verb|.xspif| extension to differentiate them from other
+  XML files.
+\end{itemize}
+
+\subsubsection{Actions:}
+\begin{itemize}
+\item{\textbf{Validating}} is the process of examinating the
+  meta-plugin's XML file, and ensure that it matches the structure
+  defined in the DTD\footnote{Document Type Definition: see
+  \ref{chap2_dtd} and the XML language syntax.} 
+\item\textbf{{Parsing}} is the process of reading the XML file, and
+  transforming it to a structured object called a DOM\footnote{Document Object Model}.
+\item{\textbf{Checking}} is the process of examinating the DOM
+  elements, and checking if the description makes sense from the XSPIF
+  point of view; e.g. that a parameter min value is less than its max
+  value\ldots etc. 
+\item{\textbf{Translating}}: is the process of writing the C/C++ source files of a given standard, from the elements of the DOM tree.
+\end{itemize}
+
+
+%-------------------------------------------------------------------------
+\section{Open Source License}
+
+\noindent XSPIF is Open Source\footnote{\url{http://www.gnu.org/philosophy/free-sw.html}}, 
+released under the General Public 
+License\footnote{\url{http://www.gnu.org/licenses/gpl.html}}. This means 
+that you are free to redistribute it, as long as you do not make a business 
+with it. You are aslo free to modify and improve it: may this guide help you in this task.
+

@@ -1,0 +1,67 @@
+%***************************************************************************
+% XSPIF user's guide -  userguide.tex
+% Chapter : System requirement - Prerequisites
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+\chapter{System requirement - Prerequisites}
+
+\section{What you should know}
+\noindent To fully understand how to use XSPIF, it is necessary to
+have a general understanding of programming techniques, especially in
+C and of real-time constraints. However, XSPIF has been designed in order to make it the simplest possible to develop audio plugins.\\
+\noindent If you want to develop audio plugins, it is also useful to
+have basic knowledge in signal processing. There are a number of
+websites, where you can find information, and sample code to start
+with. \url{http://www.musicdsp.org}.
+
+
+\section{Python}
+\noindent First of all, XSPIF needs python 2.2 or above to be installed
+on your machine. Usually it is installed by default on recent linux
+distributions. For windows, there is an installer available at:
+\verb|http://www.python.org/download/|
+and for Mac OSX we recommand to install python through Fink
+(\verb|http://fink.sourceforge.net/|) and FinkCommmander (a front-end for
+apt-get, similar to synaptic on linux) until there is a real installer
+of PyXML for OSX.  
+For more explanation refer to \cite{python:site}.
+
+\section{PyXML 0.8.2 or above}
+\noindent You will also need PyXML 0.8.2 or above. It is a python
+package dedicated to XML handling. You can find it at
+\verb|http://pyxml.sourceforge.net/|. For Mac OSX we highly recommend
+to install it through FinkCommander which will automatically check all
+the dependencies and show if a new version is available. For Windows,
+there is also an installer available in the downloads page.
+
+\noindent For more explanation refer to \cite{pyxml:site}.
+
+\section{Compiler/IDE and SDK}
+\subsection{Compiler/IDE}
+\begin{itemize}
+\item \textbf{OSX:} Our reference IDE is Project Builder which uses gcc for
+  mac and is easy to use and to customize to run XSPIF to generate new
+		sources before rebuilding the plugin.
+\item \textbf{Win:} Although some people have succeed in building VST
+  plugins with MingW Dev C++ or Borland C++ Builder. We only provide
+  examples for Visual C++ as the vstsdk is primarily designed to be
+  used with Visual C++. 
+\item \textbf{Linux:} The reference compiler we have used is gcc 
+\end{itemize}
+\subsection{SDKs}
+\begin{itemize}
+\item \textbf{VST} Available on Steinberg's web site
+  \url{http://ygrabit.steinberg.de/users/ygrabit/public_html/vstsdk/OnlineDoc/vstsdk2.3/index.html}\footnote{\cite{vst:sdk} and \cite{vst:developers}} 
+\item \textbf{AU} Available on Apple's site
+  \url{http://developer.apple.com/audio/} 
+\item \textbf{LADSPA} Available on the LADSPA web site
+  \url{http://www.ladspa.org}.\footnote{\cite{LADSPA:site}} 
+\item \textbf{PD} Available on PureData's web site
+  \url{http://www.puredata.org}. 
+\item \textbf{Max/Msp} Available on Cycling 74's web site
+  \url{http://www.cycling74.com/products/dldoc.html}.
+\item \textbf{jMax} The jMax distribution including all the
+  source-code is available on Ircam's freesoftware web-site
+  \url{http://freesoftware.ircam.fr/}.
+\end{itemize}

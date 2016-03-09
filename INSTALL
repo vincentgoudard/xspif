@@ -1,0 +1,68 @@
+---------------------------------------------------------------------------
+         XSPIF :  A cross (X) Standard PlugIn Framework
+
+Developed by Vincent Goudard and Remy Muller at IRCAM
+
+---------------------------------------------------------------------------
+
+Install Notes
+
+In order to run XSPIF you'll need 
+- python 2.2 (or above) 
+  http://www.python.org/download/
+
+- PyXML
+  http://pyxml.sourceforge.net/
+  Some python modules for XML processing.
+
+- the Software Developement Kit for each plugin standard you wish to target
+
+for VST
+http://ygrabit.steinberg.de/users/ygrabit/public_html/vstsdk/Download/
+
+for LADSPA:
+http://www.ladspa.org/ladspa_sdk/
+
+for AudioUnits:
+
+
+Win32:
+On windows there are installers for Python and PyXML, so it should be quick and easy to install.
+
+you should also define the environment variable PYTHON_HOME to point to your python installation
+and add it to your Path environment variable so that you can run the scripts from the command line:
+1) start menu->parameters->configuration->system->advanced->environment variables
+2) new (in User Variables)
+3) name : PYTHON_HOME
+  value: d:\python22 (for example)
+4)select the Path variable and click modify
+5)add %PYTHON_HOME% to the end of u=your path (e.g. %JAVA_HOME%\bin;%PYTHON_HOME%)
+
+then you should be able to run the python scripts on on of the example given with xspif
+
+e:\> cd xspif
+e:\xspif>python python/xspif2vst.py examples/lowpass.xml
+validate the XML file
+done
+parsing the XML file
+done
+cd examples/lowpass
+cd vst
+writing the source files
+  writing : lowpass.vst.cpp
+  done
+  writing : lowpass.vst.cpp
+  done
+  writing : lowpass.vst.def
+  done
+done
+
+you can also associate *.py files with python.exe which allows you to write
+e:\xspif>python/xspif2vst.py examples/lowpass.xml
+instead of
+e:\xspif>python python/xspif2vst.py examples/lowpass.xml
+
+MacOSX:
+For now in macosx it is recommended to install Fink before doing anything else and then use FinkCommander to install Python and PyXML.
+
+Linux:

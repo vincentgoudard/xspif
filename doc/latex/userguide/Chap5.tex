@@ -1,0 +1,47 @@
+%***************************************************************************
+% XSPIF user's guide -  userguide.tex
+% Chapter : Standards specific considerations
+% Authors: Remy Muller & Vincent Goudard
+%***************************************************************************
+
+\chapter{Standards specific considerations}
+
+\section{VST}
+\noindent With VST 2.3, the only way to output control, is to use MIDI
+Continuous Controlers. For that purpose the values have to be
+normalized in the range $[0-127]$, and then sent to the host as MIDI
+data as defined by by the MMA\footnote{Midi Manufacturer Association
+  \url{http://www.midi.org/}}. 
+
+\section{Audio Units}
+\noindent Control output is not yet featured in this standard, but
+should come soon with Mac OSX 10.3 also called panther. 
+Note that AudioUnit provides a set of predefined types -- namely
+decibels, hertz, boolean, percent, seconds, phase, cents,
+Degrees\ldots-- with the mapping done automatically. However, as XSPIF
+can use arbitrary units with an arbitrary mapping, we only implemented
+AudioUnit's ``generic parameters'' which only have a range and default
+value with a linear mapping. Hence, if you specify a \emph{log}
+mapping for a parameter, it will be ignored. Futur improvement to
+XSPIF, could use the \emph{unit} -- which can be arbitraty -- attribute to guess the nature of the parameter.
+
+
+\section{LADSPA}
+\noindent In LADSPA, the control outputs undergo the same mechanism as
+writing output audio buffers, and it consists in writing a float value
+to a memory location which is or can be shared.\\ 
+\noindent Thus, unlike VST and PD,  synchronicity is not ensured and
+depends on the host management of the different threads. 
+
+\section{PureData, Max/Msp, jMax}
+\noindent With Pure data, Max/Msp and jMax, if the parameter's optionnal attribute
+\verb|noinlet| is set to \emph{true}, it means that this specific
+parameter will not appear as an inlet on the object's layout. It can
+be useful if there are many parameters and you want to save space on
+the screen to keep some visibility. However, this parameter will still
+be controlable by sending the following message to the left-most inlet
+\textit{parameter\_name} value. Note that, in pure data, the object
+can also receive the message ``print'' which will display some
+information about the plugin, in particular, the parameters' names,
+and their range and the messages ``on'' and ``off'' which will call
+respectively \emph{activate} and \emph{deactivate}.  
